@@ -60,3 +60,22 @@ class BlackSwanAPI(object):
         df = self.client.query(query.format(io_depth, type, device))['fio']
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
         return get_reps(df_indiv, self.allowed_error)
+
+    def get_machines(self, predicate):
+        where_clause = list()
+        for key, value in predicate.items():
+            where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
+        where_clause = " and ".join(where_clause)
+        query = "select * from machine_information where {}"
+        df = self.client.query(query.format(where_clause))['machine_information']
+        return df.to_dict(orient = "records")
+
+    def get_machine_ids(self, predicate):
+        where_clause = list()
+        for key, value in predicate.items():
+            where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
+        where_clause = " and ".join(where_clause)
+        query = "select * from machine_information where {}"
+        df = self.client.query(query.format(where_clause))['machine_information']
+        result = df.to_dict(orient = "records")
+        return [r['mid'] for r in result]
