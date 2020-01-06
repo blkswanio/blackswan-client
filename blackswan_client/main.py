@@ -61,7 +61,7 @@ class BlackSwanAPI(object):
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
         return get_reps(df_indiv, self.allowed_error)
 
-    def get_machines(self, predicate):
+    def get_machine_details(self, predicate):
         where_clause = list()
         for key, value in predicate.items():
             where_clause.append(" \"{}\" = \'{}\' ".format(key, value))

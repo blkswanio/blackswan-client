@@ -8,5 +8,5 @@ if __name__ == "__main__":
     print(blkswan.get_no_reps_for_membench('yes', 0, 'read_memory_avx_max'))
     print(blkswan.get_no_reps_for_stream('yes', 0, 'triad_stdev'))
     print(blkswan.no_of_reps_for_fio(4096, 'read_rand', 'sda4', 'READ_IOPS'))
-    print(blkswan.get_machines({ "blockdevices": "nvme0n1" }))
+    print(blkswan.get_machine_details({ "blockdevices": "nvme0n1" }))
     print(blkswan.get_machine_ids({ "blockdevices": "nvme0n1" }))
