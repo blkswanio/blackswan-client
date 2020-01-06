@@ -47,7 +47,7 @@ class BlackSwanAPI(object):
         for mid in mids:
             mid_clause.append(" \"mid\" = \'{}\' ".format(mid))
         mid_clause = " or ".join(mid_clause)
-        mid_clause = "( " + mid_clause + ") "
+        mid_clause = "( " + mid_clause + " )"
         
         benchmark_clause = list()
         for key, value in benchmark_predicate.items():
