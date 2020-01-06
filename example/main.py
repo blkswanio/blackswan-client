@@ -10,3 +10,8 @@ if __name__ == "__main__":
     print(blkswan.get_no_of_reps_for_fio(4096, 'read_rand', 'sda4', 'READ_IOPS'))
     print(blkswan.get_machine_details({ "blockdevices": "nvme0n1" }))
     print(blkswan.get_machine_ids({ "blockdevices": "nvme0n1" }))
+    print(blkswan.get_no_of_reps({ 
+        "testname": "SP",
+        "dvfs": "yes",
+        "socket": 0
+     }, 'mops_total', 'npb_cpu_mt'))

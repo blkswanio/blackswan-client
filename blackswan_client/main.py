@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from influxdb import DataFrameClient
 
-from blackswan_client.utils import ci_reduction_parallel, get_reps
+from blackswan_client.utils import *
 
 
 class BlackSwanAPI(object):
@@ -20,62 +20,63 @@ class BlackSwanAPI(object):
         if not self.client.ping():
             print('Connection: FAILED\n')
             sys.exit(1)
+    
+    def get_no_of_reps(self, predicate, param, test):
+        where_clause = generate_where_clause(predicate)
+        query = "select {} from {} where {}".format(param, test, where_clause)
+        df = self.client.query(query)[test]
+        df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
+        return calculate_reps(df_indiv, self.allowed_error)
 
     def get_no_of_reps_for_cpu_st(self, test_name, dvfs, socket, param):
         query = """
-        select * from npb_cpu_st where \"socket\" = \'{}\' and \"testname\" = \'{}\'
-        """
-        df = self.client.query(query.format(socket, test_name))['npb_cpu_st']
+        select {} from npb_cpu_st where \"socket\" = \'{}\' and \"testname\" = \'{}\'
+        """.format(param, socket, test_name)
+        df = self.client.query(query)['npb_cpu_st']
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
-        return get_reps(df_indiv, self.allowed_error)
+        return calculate_reps(df_indiv, self.allowed_error)
 
     def get_no_of_reps_for_cpu_mt(self, test_name, dvfs, socket, param):
         query = """
-        select * from npb_cpu_mt where \"socket\" = \'{}\' and \"testname\" = \'{}\'
-        """
-        df = self.client.query(query.format(socket, test_name))['npb_cpu_mt']
+        select {} from npb_cpu_mt where \"socket\" = \'{}\' and \"testname\" = \'{}\'
+        """.format(param, socket, test_name)
+        df = self.client.query(query)['npb_cpu_mt']
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
-        return get_reps(df_indiv, self.allowed_error)
-        
+        return calculate_reps(df_indiv, self.allowed_error)
+
     def get_no_of_reps_for_membench(self, dvfs, socket, param):
         query = """
-        select * from membench where \"socket\" = \'{}\'
-        """
-        df = self.client.query(query.format(socket))['membench']
+        select {} from membench where \"socket\" = \'{}\'
+        """.format(param, socket)
+        df = self.client.query(query)['membench']
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
-        return get_reps(df_indiv, self.allowed_error)
+        return calculate_reps(df_indiv, self.allowed_error)
 
     def get_no_of_reps_for_stream(self, dvfs, socket, param):
         query = """
-        select * from stream where \"socket\" = \'{}\'
-        """
-        df = self.client.query(query.format(socket))['stream']
+        select {} from stream where \"socket\" = \'{}\'
+        """.format(param, socket)
+        df = self.client.query(query)['stream']
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
-        return get_reps(df_indiv, self.allowed_error)
+        return calculate_reps(df_indiv, self.allowed_error)
 
     def get_no_of_reps_for_fio(self, io_depth, type, device, param):
         query = """
-        select * from fio where \"io_depth\" = \'{}\' and \"type\" = \'{}\' and \"device\" = \'{}\'
-        """
-        df = self.client.query(query.format(io_depth, type, device))['fio']
+        select {} from fio where \"io_depth\" = \'{}\' and \"type\" = \'{}\' and \"device\" = \'{}\'
+        """.format(param, io_depth, type, device)
+        df = self.client.query(query)['fio']
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
-        return get_reps(df_indiv, self.allowed_error)
+        return calculate_reps(df_indiv, self.allowed_error)
 
     def get_machine_details(self, predicate):
-        where_clause = list()
-        for key, value in predicate.items():
-            where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
-        where_clause = " and ".join(where_clause)
-        query = "select * from machine_information where {}"
-        df = self.client.query(query.format(where_clause))['machine_information']
+        where_clause = generate_where_clause(predicate)
+        query = "select * from machine_information where {}".format(where_clause)
+        df = self.client.query(query)['machine_information']
         return df.to_dict(orient = "records")
 
     def get_machine_ids(self, predicate):
-        where_clause = list()
-        for key, value in predicate.items():
-            where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
-        where_clause = " and ".join(where_clause)
-        query = "select * from machine_information where {}"
-        df = self.client.query(query.format(where_clause))['machine_information']
+        where_clause = generate_where_clause(predicate)
+        query = "select * from machine_information where {}".format(where_clause)
+        df = self.client.query(query)['machine_information']
         result = df.to_dict(orient = "records")
         return [r['mid'] for r in result]

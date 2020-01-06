@@ -134,7 +134,7 @@ def ci_reduction_parallel(data, sample_size_min=10, sample_size_max=None, max_re
     return all_output
     
 
-def get_reps(df_indiv, allowed_err):
+def calculate_reps(df_indiv, allowed_err):
     if len(df_indiv) > 0:
         df_avg = df_indiv.groupby(['sample_size']).mean()
         df_avg["desired_lb"] = df_avg.med - allowed_err * df_avg.med
@@ -157,3 +157,9 @@ def get_reps(df_indiv, allowed_err):
     if stop_at_sample_size_idx:
         return float(df_avg[df_avg['sample_size'] == stop_at_sample_size_idx].get('rep'))
     return -1
+
+def generate_where_clause(predicate):
+    where_clause = list()
+    for key, value in predicate.items():
+        where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
+    return " and ".join(where_clause)
