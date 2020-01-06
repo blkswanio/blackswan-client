@@ -37,7 +37,7 @@ class BlackSwanAPI(object):
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
         return get_reps(df_indiv, self.allowed_error)
         
-    def get_no_reps_for_membench(self, dvfs, socket, param):
+    def get_no_of_reps_for_membench(self, dvfs, socket, param):
         query = """
         select * from membench where \"socket\" = \'{}\'
         """
@@ -45,7 +45,7 @@ class BlackSwanAPI(object):
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
         return get_reps(df_indiv, self.allowed_error)
 
-    def get_no_reps_for_stream(self, dvfs, socket, param):
+    def get_no_of_reps_for_stream(self, dvfs, socket, param):
         query = """
         select * from stream where \"socket\" = \'{}\'
         """
@@ -53,7 +53,7 @@ class BlackSwanAPI(object):
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
         return get_reps(df_indiv, self.allowed_error)
 
-    def no_of_reps_for_fio(self, io_depth, type, device, param):
+    def get_no_of_reps_for_fio(self, io_depth, type, device, param):
         query = """
         select * from fio where \"io_depth\" = \'{}\' and \"type\" = \'{}\' and \"device\" = \'{}\'
         """
