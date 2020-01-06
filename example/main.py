@@ -1,8 +1,9 @@
 from blackswan_client.main import BlackSwanAPI
 
 if __name__ == "__main__":
-    blkswan = BlackSwanAPI(0.05, 200)
+    blkswan = BlackSwanAPI()
     blkswan.connect('root', 'root', 'blackswan_dev', 'scruffy.soe.ucsc.edu')
+    blkswan.set_allowed_err_and_trial_cnt(0.05, 200)
     print(blkswan.get_machine_details({ "blockdevices": "nvme0n1" }))
     print(blkswan.get_machine_ids({ "blockdevices": "nvme0n1" }))
     print(blkswan.get_no_of_reps(

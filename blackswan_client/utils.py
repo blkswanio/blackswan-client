@@ -13,6 +13,7 @@ def ncr(n, r):
     denom = reduce(op.mul, xrange(1, r+1))
     return numer//denom
 
+
 def column2val(df, column):
     """ For a given dataframe and column name, return the only unique value in the column;
      If there are multiple unique values, print an error and return the first one.
@@ -22,6 +23,7 @@ def column2val(df, column):
         return vals[0]
     else:
         return vals
+
 
 def median_and_ci(s):
     """ For a value series (or dataframe column), return median and median CI, as defined
@@ -42,6 +44,7 @@ def median_and_ci(s):
     else:
         # Not enough data to construct CI
         return None, None, None, 1
+
 
 def ci_reduction(data, sample_size_min=10, sample_size_max=None, max_rep_count=20):
     if not sample_size_max:
@@ -67,6 +70,7 @@ def ci_reduction(data, sample_size_min=10, sample_size_max=None, max_rep_count=2
                            "ci_ub": ci_ub})
 
     return pd.DataFrame(ci)
+
 
 def ci_reduction_trial(input_tuple):
     (data, sample_size_min, sample_size_max, rep) = input_tuple
@@ -106,6 +110,7 @@ def ci_reduction_trial(input_tuple):
                        "ci_ub": ci_ub})
 
     return pd.DataFrame(res)
+
 
 def ci_reduction_parallel(data, sample_size_min=10, sample_size_max=None, max_rep_count=20):
     """ Parallel version of ci_reduction()"""
