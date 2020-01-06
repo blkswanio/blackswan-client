@@ -20,62 +20,43 @@ class BlackSwanAPI(object):
         if not self.client.ping():
             print('Connection: FAILED\n')
             sys.exit(1)
-    
-    def get_no_of_reps(self, predicate, param, test):
-        where_clause = generate_where_clause(predicate)
+
+    def get_no_of_reps(self, machine_predicate, benchmark_predicate, param, test):
+        mid_clause = list()
+        mids = self.get_machine_ids(machine_predicate)
+        for mid in mids:
+            mid_clause.append(" \"mid\" = \'{}\' ".format(mid))
+        mid_clause = " or ".join(mid_clause)
+        mid_clause = "( " + mid_clause + ") "
+        
+        benchmark_clause = list()
+        for key, value in benchmark_predicate.items():
+            benchmark_clause.append(" \"{}\" = \'{}\' ".format(key, value))
+        benchmark_clause = " and ".join(benchmark_clause)
+        
+        where_clause = benchmark_clause + " and " + mid_clause
         query = "select {} from {} where {}".format(param, test, where_clause)
+
         df = self.client.query(query)[test]
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
         return calculate_reps(df_indiv, self.allowed_error)
 
-    def get_no_of_reps_for_cpu_st(self, test_name, dvfs, socket, param):
-        query = """
-        select {} from npb_cpu_st where \"socket\" = \'{}\' and \"testname\" = \'{}\'
-        """.format(param, socket, test_name)
-        df = self.client.query(query)['npb_cpu_st']
-        df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
-        return calculate_reps(df_indiv, self.allowed_error)
-
-    def get_no_of_reps_for_cpu_mt(self, test_name, dvfs, socket, param):
-        query = """
-        select {} from npb_cpu_mt where \"socket\" = \'{}\' and \"testname\" = \'{}\'
-        """.format(param, socket, test_name)
-        df = self.client.query(query)['npb_cpu_mt']
-        df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
-        return calculate_reps(df_indiv, self.allowed_error)
-
-    def get_no_of_reps_for_membench(self, dvfs, socket, param):
-        query = """
-        select {} from membench where \"socket\" = \'{}\'
-        """.format(param, socket)
-        df = self.client.query(query)['membench']
-        df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
-        return calculate_reps(df_indiv, self.allowed_error)
-
-    def get_no_of_reps_for_stream(self, dvfs, socket, param):
-        query = """
-        select {} from stream where \"socket\" = \'{}\'
-        """.format(param, socket)
-        df = self.client.query(query)['stream']
-        df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
-        return calculate_reps(df_indiv, self.allowed_error)
-
-    def get_no_of_reps_for_fio(self, io_depth, type, device, param):
-        query = """
-        select {} from fio where \"io_depth\" = \'{}\' and \"type\" = \'{}\' and \"device\" = \'{}\'
-        """.format(param, io_depth, type, device)
-        df = self.client.query(query)['fio']
-        df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
-        return calculate_reps(df_indiv, self.allowed_error)
-
     def get_machine_details(self, predicate):
-        where_clause = generate_where_clause(predicate)
+        where_clause = list()
+        for key, value in predicate.items():
+            where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
+        where_clause = " and ".join(where_clause)
+
         query = "select * from machine_information where {}".format(where_clause)
         df = self.client.query(query)['machine_information']
         return df.to_dict(orient = "records")
 
     def get_machine_ids(self, predicate):
-        where_clause = generate_where_clause(predicate)
+        where_clause = list()
+        for key, value in predicate.items():
+            where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
+        where_clause = " and ".join(where_clause)
+
         query = "select * from machine_information where {}".format(where_clause)
         df = self.client.query(query)['machine_information']
         result = df.to_dict(orient = "records")

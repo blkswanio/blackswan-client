@@ -154,12 +154,4 @@ def calculate_reps(df_indiv, allowed_err):
         stop_at_sample_size_idx = None
         stop_at_sample_size = None
 
-    if stop_at_sample_size_idx:
-        return float(df_avg[df_avg['sample_size'] == stop_at_sample_size_idx].get('rep'))
-    return -1
-
-def generate_where_clause(predicate):
-    where_clause = list()
-    for key, value in predicate.items():
-        where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
-    return " and ".join(where_clause)
+    return stop_at_sample_size_idx
