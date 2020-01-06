@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 
 import pandas as pd
 import numpy as np
@@ -7,6 +8,8 @@ from influxdb import DataFrameClient
 
 from blackswan_client.utils import *
 
+
+logging.basicConfig(level=logging.INFO)
 
 class BlackSwanAPI(object):
     """BlackSwan API Client library.
@@ -36,6 +39,7 @@ class BlackSwanAPI(object):
         
         where_clause = benchmark_clause + " and " + mid_clause
         query = "select {} from {} where {}".format(param, test, where_clause)
+        logging.info('Query: {}'.format(query))
 
         df = self.client.query(query)[test]
         df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_count)
@@ -48,6 +52,8 @@ class BlackSwanAPI(object):
         where_clause = " and ".join(where_clause)
 
         query = "select * from machine_information where {}".format(where_clause)
+        logging.info('Query: {}'.format(query))
+
         df = self.client.query(query)['machine_information']
         return df.to_dict(orient = "records")
 
@@ -58,6 +64,8 @@ class BlackSwanAPI(object):
         where_clause = " and ".join(where_clause)
 
         query = "select * from machine_information where {}".format(where_clause)
+        logging.info('Query: {}'.format(query))
+
         df = self.client.query(query)['machine_information']
         result = df.to_dict(orient = "records")
         return [r['mid'] for r in result]
