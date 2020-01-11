@@ -42,49 +42,23 @@ class BlackSwanAPI(object):
 
     @check_connection
     def get_no_of_reps(self, machine_predicate, benchmark_predicate, param, test):
-        mid_clause = list()
-        mids = self.get_machine_ids(machine_predicate)
-        for mid in mids:
-            mid_clause.append(" \"mid\" = \'{}\' ".format(mid))
-        mid_clause = " or ".join(mid_clause)
-        mid_clause = "( " + mid_clause + " )"
-        
-        benchmark_clause = list()
+        where_clause = list()
         for key, value in benchmark_predicate.items():
-            benchmark_clause.append(" \"{}\" = \'{}\' ".format(key, value))
-        benchmark_clause = " and ".join(benchmark_clause)
-        
-        where_clause = benchmark_clause + " and " + mid_clause
+            where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
+
+        for key, value in machine_predicate.items():
+            where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
+        where_clause = " and ".join(where_clause)
+
         query = "select {} from {} where {}".format(param, test, where_clause)
         logging.info('Query: {}'.format(query))
 
-        df = self.client.query(query)[test]
-        df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_cnt)
-        return calculate_reps(df_indiv, self.allowed_err)
-
-    @check_connection
-    def get_machine_details(self, predicate):
-        where_clause = list()
-        for key, value in predicate.items():
-            where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
-        where_clause = " and ".join(where_clause)
-
-        query = "select * from machine_information where {}".format(where_clause)
-        logging.info('Query: {}'.format(query))
-
-        df = self.client.query(query)['machine_information']
-        return df.to_dict(orient = "records")
-
-    @check_connection
-    def get_machine_ids(self, predicate):
-        where_clause = list()
-        for key, value in predicate.items():
-            where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
-        where_clause = " and ".join(where_clause)
-
-        query = "select * from machine_information where {}".format(where_clause)
-        logging.info('Query: {}'.format(query))
-
-        df = self.client.query(query)['machine_information']
-        result = df.to_dict(orient = "records")
-        return [r['mid'] for r in result]
+        result_dict = self.client.query(query)
+        
+        if len(result_dict):
+            df = result_dict[param]
+            df_indiv = ci_reduction_parallel(df, max_rep_count=self.trial_cnt)
+            return calculate_reps(df_indiv, self.allowed_err)
+        else:
+            logging.info('Requested query resulted into an empty dataframe.')
+            return -1
