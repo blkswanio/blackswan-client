@@ -11,9 +11,11 @@ from blackswan_client.utils import *
 
 logging.basicConfig(level=logging.INFO)
 
+
 class BlackSwanAPI(object):
     """BlackSwan API Client library.
     """
+
     def __init__(self):
         self.allowed_err = 0
         self.trial_cnt = 0
@@ -28,7 +30,7 @@ class BlackSwanAPI(object):
             self.is_connected = True
 
     def check_connection(fn):
-        def wrapper(self, *args, **kwargs) :
+        def wrapper(self, *args, **kwargs):
             if not self.is_connected:
                 logging.error("Client not connected to InfluxDB instance.")
                 sys.exit(1)
@@ -41,7 +43,12 @@ class BlackSwanAPI(object):
         self.trial_cnt = trial_cnt
 
     @check_connection
-    def get_no_of_reps(self, machine_predicate, benchmark_predicate, param, test):
+    def get_no_of_reps(
+            self,
+            machine_predicate,
+            benchmark_predicate,
+            param,
+            test):
         where_clause = list()
         for key, value in benchmark_predicate.items():
             where_clause.append(" \"{}\" = \'{}\' ".format(key, value))
@@ -54,10 +61,11 @@ class BlackSwanAPI(object):
         logging.info('Query: {}'.format(query))
 
         result_dict = self.client.query(query)
-        
+
         if len(result_dict):
             df = result_dict[test]
-            df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_cnt)
+            df_indiv = ci_reduction_parallel(
+                df[param], max_rep_count=self.trial_cnt)
             return calculate_reps(df_indiv, self.allowed_err)
         else:
             logging.info('Requested query resulted into an empty dataframe.')

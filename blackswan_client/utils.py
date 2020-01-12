@@ -3,15 +3,18 @@ import numpy as np
 from datetime import datetime as dt
 import operator as op
 import multiprocessing as mp
+from functools import reduce
 
 
 def ncr(n, r):
-    # Source: https://stackoverflow.com/questions/4941753/is-there-a-math-ncr-function-in-python
-    r = min(r, n-r)
-    if r == 0: return 1
-    numer = reduce(op.mul, xrange(n, n-r, -1))
-    denom = reduce(op.mul, xrange(1, r+1))
-    return numer//denom
+    # Source:
+    # https://stackoverflow.com/questions/4941753/is-there-a-math-ncr-function-in-python
+    r = min(r, n - r)
+    if r == 0:
+        return 1
+    numer = reduce(op.mul, xrange(n, n - r, -1))
+    denom = reduce(op.mul, xrange(1, r + 1))
+    return numer // denom
 
 
 def column2val(df, column):
@@ -46,7 +49,11 @@ def median_and_ci(s):
         return None, None, None, 1
 
 
-def ci_reduction(data, sample_size_min=10, sample_size_max=None, max_rep_count=20):
+def ci_reduction(
+        data,
+        sample_size_min=10,
+        sample_size_max=None,
+        max_rep_count=20):
     if not sample_size_max:
         sample_size_max = len(data)
 
@@ -80,22 +87,45 @@ def ci_reduction_trial(input_tuple):
 
     res = []
 
-    # Skip some samples sizes for large sets -- do not consider every sample size to accelerate processing
+    # Skip some samples sizes for large sets -- do not consider every sample
+    # size to accelerate processing
     if sample_size_max < 200:
         # Every value
         studied_range = range(sample_size_min, sample_size_max + 1)
     elif sample_size_max < 500:
         # Fewer after 200, every second
-        studied_range = range(sample_size_min, 200) + range(200, sample_size_max + 1, 2)
+        studied_range = range(sample_size_min, 200) + \
+            range(200, sample_size_max + 1, 2)
     elif sample_size_max < 1000:
         # In addition to previous range, even fewer after 500, every 10
-        studied_range = range(sample_size_min, 200) + range(200, 500, 2) + range(500, sample_size_max + 1, 10)
+        studied_range = range(sample_size_min,
+                              200) + range(200,
+                                           500,
+                                           2) + range(500,
+                                                      sample_size_max + 1,
+                                                      10)
     elif sample_size_max < 2000:
         # In addition to previous range, even fewer after 1000, every 50
-        studied_range = range(sample_size_min, 200) + range(200, 500, 2) + range(500, 1000, 10) + range(1000, sample_size_max + 1, 50)
+        studied_range = range(sample_size_min,
+                              200) + range(200,
+                                           500,
+                                           2) + range(500,
+                                                      1000,
+                                                      10) + range(1000,
+                                                                  sample_size_max + 1,
+                                                                  50)
     else:
         # In addition to previous range, even fewer after 1000, every 100
-        studied_range = range(sample_size_min, 200) + range(200, 500, 2) + range(500, 1000, 10) + range(1000, 2000, 50) + range(2000, sample_size_max + 1, 100)
+        studied_range = range(sample_size_min,
+                              200) + range(200,
+                                           500,
+                                           2) + range(500,
+                                                      1000,
+                                                      10) + range(1000,
+                                                                  2000,
+                                                                  50) + range(2000,
+                                                                              sample_size_max + 1,
+                                                                              100)
 
     for sample_size in studied_range:
 
@@ -104,15 +134,19 @@ def ci_reduction_trial(input_tuple):
 
         if not errc:
             res.append({"rep": rep,
-                       "sample_size": sample_size,
-                       "med": med,
-                       "ci_lb": ci_lb,
-                       "ci_ub": ci_ub})
+                        "sample_size": sample_size,
+                        "med": med,
+                        "ci_lb": ci_lb,
+                        "ci_ub": ci_ub})
 
     return pd.DataFrame(res)
 
 
-def ci_reduction_parallel(data, sample_size_min=10, sample_size_max=None, max_rep_count=20):
+def ci_reduction_parallel(
+        data,
+        sample_size_min=10,
+        sample_size_max=None,
+        max_rep_count=20):
     """ Parallel version of ci_reduction()"""
 
     if not sample_size_max:
@@ -120,7 +154,8 @@ def ci_reduction_parallel(data, sample_size_min=10, sample_size_max=None, max_re
 
     if sample_size_max >= sample_size_min:
 
-        tasks = [(data, sample_size_min, sample_size_max, idx) for idx in range(max_rep_count)]
+        tasks = [(data, sample_size_min, sample_size_max, idx)
+                 for idx in range(max_rep_count)]
 
         #p = mp.Pool(mp.cpu_count())
         # Save 2 cores for other tasks
@@ -137,7 +172,7 @@ def ci_reduction_parallel(data, sample_size_min=10, sample_size_max=None, max_re
         all_output = pd.DataFrame()
 
     return all_output
-    
+
 
 def calculate_reps(df_indiv, allowed_err):
     if len(df_indiv) > 0:
@@ -151,7 +186,7 @@ def calculate_reps(df_indiv, allowed_err):
     else:
         df_avg = pd.DataFrame()
 
-    ci_can_stop = df_avg[df_avg["stopping"] == True]
+    ci_can_stop = df_avg[df_avg["stopping"]]
     if len(ci_can_stop):
         stop_at_sample_size_idx = ci_can_stop.index.min()
         stop_at_sample_size = df_avg.at[stop_at_sample_size_idx, "sample_size"]
