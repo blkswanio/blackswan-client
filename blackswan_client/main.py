@@ -56,8 +56,8 @@ class BlackSwanAPI(object):
         result_dict = self.client.query(query)
         
         if len(result_dict):
-            df = result_dict[param]
-            df_indiv = ci_reduction_parallel(df, max_rep_count=self.trial_cnt)
+            df = result_dict[test]
+            df_indiv = ci_reduction_parallel(df[param], max_rep_count=self.trial_cnt)
             return calculate_reps(df_indiv, self.allowed_err)
         else:
             logging.info('Requested query resulted into an empty dataframe.')
