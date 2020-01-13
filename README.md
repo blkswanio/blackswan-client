@@ -1,7 +1,7 @@
 # Baseliner Client
 
 ### Building Instructions
-```
+```bash
 git clone https://github.com/JayjeetAtGithub/baseliner-py
 cd baseliner-py/
 pip install .
@@ -9,7 +9,7 @@ pip install .
 
 ### Example Usage:
 
-```
+```python3
 from baseliner import Baseliner
 
 baseliner = Baseliner()
