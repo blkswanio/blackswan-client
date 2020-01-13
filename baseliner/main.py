@@ -43,7 +43,7 @@ class Baseliner(object):
         self.trial_cnt = trial_cnt
 
     @check_connection
-    def get_no_of_reps(
+    def get_num_reps(
             self,
             machine_predicate,
             benchmark_predicate,

@@ -16,7 +16,7 @@ baseliner = Baseliner()
 baseliner.connect('<user>', '<passwd>', '<db>', '<hostname>')
 baseliner.set_allowed_err_and_trial_cnt(0.05, 200)
 
-print(baseliner.get_no_of_reps(
+print(baseliner.get_num_reps(
     machine_predicate={
         "architecture": "amd64"
     },
