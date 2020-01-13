@@ -2,8 +2,8 @@
 
 ### Building Instructions
 ```
-git clone https://github.com/JayjeetAtGithub/-client
-cd baseliner-client/
+git clone https://github.com/JayjeetAtGithub/baseliner-py
+cd baseliner-py/
 pip install .
 ```
 
