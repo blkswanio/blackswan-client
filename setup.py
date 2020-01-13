@@ -5,7 +5,7 @@ setup(name='baseliner-py',
       description='Baseliner Client',
       author='Jayjeet Chakraborty',
       author_email='jayjeetchakraborty25@gmail.com',
-      packages=['baseliner_client'],
+      packages=['baseliner'],
       install_requires=[
           'pandas',
           'numpy',

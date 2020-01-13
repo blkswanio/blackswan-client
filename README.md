@@ -10,15 +10,18 @@ pip install .
 ### Example Usage:
 
 ```
-baseliner.get_no_of_reps(
-    machine_predicate = {
-        "blockdevices": "nvme0n1"
-    }, 
-    benchmark_predicate = { 
-        "testname": "SP",
-        "dvfs": "yes",
-        "socket": 0
-     }, param = 'mops_total', test = 'npb_cpu_mt'))
+from baseliner import Baseliner
+
+baseliner = Baseliner()
+baseliner.connect('<user>', '<passwd>', '<db>', '<hostname>')
+baseliner.set_allowed_err_and_trial_cnt(0.05, 200)
+
+print(baseliner.get_no_of_reps(
+    machine_predicate={
+        "architecture": "amd64"
+    },
+    benchmark_predicate={
+    }, param='READ_IOPS', test='fio'))
 ```
 
 Look into `usage/` for more example usage.

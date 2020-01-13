@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 from influxdb import DataFrameClient
 
-from baseliner_client.utils import *
+from baseliner.utils import *
 
 
 logging.basicConfig(level=logging.INFO)

@@ -1,4 +1,4 @@
-from baseliner_client.main import Baseliner
+from baseliner import Baseliner
 
 if __name__ == "__main__":
     baseliner = Baseliner()
