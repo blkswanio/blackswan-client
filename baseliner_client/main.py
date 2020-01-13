@@ -6,14 +6,14 @@ import pandas as pd
 import numpy as np
 from influxdb import DataFrameClient
 
-from blackswan_client.utils import *
+from baseliner_client.utils import *
 
 
 logging.basicConfig(level=logging.INFO)
 
 
-class BlackSwanAPI(object):
-    """BlackSwan API Client library.
+class Baseliner(object):
+    """Baseliner API Client library.
     """
 
     def __init__(self):

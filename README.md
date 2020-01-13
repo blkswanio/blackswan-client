@@ -1,16 +1,16 @@
-# BlackSwanAPI Client
+# Baseliner Client
 
 ### Building Instructions
 ```
-git clone https://github.com/JayjeetAtGithub/blackswan-client
-cd blackswan-client/
+git clone https://github.com/JayjeetAtGithub/-client
+cd baseliner-client/
 pip install .
 ```
 
 ### Example Usage:
 
 ```
-blkswan.get_no_of_reps(
+baseliner.get_no_of_reps(
     machine_predicate = {
         "blockdevices": "nvme0n1"
     }, 

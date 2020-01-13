@@ -1,11 +1,11 @@
 from setuptools import setup
 
-setup(name='blackswan_client',
+setup(name='baseliner-py',
       version='0.0.1',
-      description='BlackSwan Client',
+      description='Baseliner Client',
       author='Jayjeet Chakraborty',
       author_email='jayjeetchakraborty25@gmail.com',
-      packages=['blackswan_client'],
+      packages=['baseliner_client'],
       install_requires=[
           'pandas',
           'numpy',
